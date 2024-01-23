@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <!-- add title -->
+    <title></title>
+
+    <!-- importing libraries here -->
+    <script src="lib/d3-dsv.min.js"></script>
+    <script src="lib/d3-geo-projection.v2.min.js"></script>
+    <script src="lib/d3-legend.min.js"></script>
+    <script src="lib/d3-tip.min.js"></script>
+    <script src="lib/d3.v5.min.js"></script>
+    <script src="lib/topojson.v2.min.js"></script>
+
+    <style>
+        /* ---------CSS--------- */
+
+        /* tooltip for choropleth */
+        .d3-tip {
+            line-height: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 1);
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000000;
+            border: 1px solid #000000;
+            pointer-events: none;
+            font-size: 14px;
+            position: relative;
+            font-size: 14px;
+            z-index: 4;
+            border-radius: 25px;
+        }
+
+        /* First Visualization (first page) */
+        .firstVisualization{
+            display: flex;
+            height: 907px;
+        }
+        .leftFirstVisualization{
+            flex: 1;
+            width: 29.5%;
+        }
+        .rightFirstVisualization {
+            width: 70.5%;
+            background-color: rgba(87, 85, 85, 0.199);
+            border-radius: 25px;
+            z-index: 1;
+        }
+        .changeContainer {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 50px;
+            left: 1500px;
+            width: 350px;
+            height: 200px;
+            z-index: 1; 
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.5em;
+        }
+
+        .textBox {
+            margin-top: 50px;
+            margin-left: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 3em;
+            z-index: 1;
+        }
+
+        .customSelect {
+            position: relative;
+            width: 100%;
+        }
+        .customSelect select{
+            appearance: none;
+            /* safari */
+            -webkit-appearance: none;
+            /* other styles for aesthetics */
+            font-family: Arial, Helvetica, sans-serif;
+            width: 89%;
+            font-size: 1.1rem;
+            padding: 0.6em 6em 0.675em 1em;
+            /* padding-left: 17px; */
+            margin-left: 27px;
+            margin-right: 100px;
+            background-color: #fdfdfd;
+            border: 1px solid #caced1;
+            border-radius: 30px;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .customSelect::before,
+        .customSelect::after {
+            content: "▼"; /* Unicode character for down arrow */
+            position: absolute;
+            right: 52px; /* Adjust the position as needed */
+            top: 22px; /* Adjust the position as needed */
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .svgContainer {
+            padding: 50px;
+        }
+
+        .sliders {
+            margin-top: 35px;
+            margin-left: 27px;
+        }
+        .sliders input{
+            -webkit-appearance: none;
+            appearance: none;
+            width: 348px;
+            height: 7px;
+            border-radius:10px;
+            background-color:rgb(8,82,157,1);
+            outline:none;
+        }
+        
+        .sliders input::-webkit-slider-thumb{
+            -webkit-appearance:none;
+            width:15px;
+            height:15px;
+            border-radius:50%;
+            background-color:rgb(255, 255, 255);
+            border: 1px solid rgb(8,82,157,1);
+        }
+
+        .range-slider__value {
+            display: inline-block;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            position: relative;
+            width: 100px;
+            color: rgb(255, 255, 255);
+            line-height: 24px;
+            text-align: center;
+            border-radius: 3px;
+            background: rgb(0, 0, 0);
+            padding: 5px 10px;
+            margin-left: 20px;
+
+            &:after {
+                position: absolute;
+                top: 11px;
+                left: -7px;
+                width: 0;
+                height: 0;
+                border-top: 7px solid transparent;
+                border-right: 7px solid rgb(0, 0, 0);
+                border-bottom: 7px solid transparent;
+                content: '';
+            }
+        }
+        /* Second Visualization (line graph page) */
+        .secondVisualization {
+            display: flex;
+            height: 907px;
+            padding-top: 100px;
+        }
+        .leftSecondVisualization{
+            flex: 1;
+            width: 70%;
+            background-color: rgba(87, 85, 85, 0.199);
+            border-radius: 25px;
+            z-index: -1;
+        }
+        .rightSecondVisualization {
+            width: 30%;
+        }
+
+        .customSelect2 {
+            position: relative;
+            width: 100%;
+        }
+        .customSelect2 select{
+            appearance: none;
+            /* safari */
+            -webkit-appearance: none;
+            /* other styles for aesthetics */
+            font-family: Arial, Helvetica, sans-serif;
+            width: 89%;
+            font-size: 1.1rem;
+            padding: 0.6em 0em 0.675em 1em;
+            margin-left: 27px;
+            background-color: #fdfdfd;
+            border: 1px solid #caced1;
+            border-radius: 30px;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .customSelect2::before,
+        .customSelect2::after {
+            content: "▼"; /* Unicode character for down arrow */
+            position: absolute;
+            right: 35px; /* Adjust the position as needed */
+            top: 23px; /* Adjust the position as needed */
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .textBox2 {
+            margin-top: 50px;
+            margin-left: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 3em;
+            z-index: 1;
+            overflow-x: hidden;
+            position:absolute;
+            left: 1000px;
+        }
+    </style>
+
+    
+</head>
+
+
+<body>
+    <div class="firstVisualization">
+        <div class="leftFirstVisualization">
+            <div class="overlay" id="explanationOverlay">
+            </div>
+            <div class="textBox">
+                <span style="margin-left: 100px; margin-top: 0; margin-bottom: 0;">Unveiling</span><br>
+                <p style="font-size:3.5em;  margin-top: 0; margin-bottom: 0;"> Correla<span style="color:rgb(8,82,157,1)">tions</span> </p>
+            </div>
+            <div class="changeContainer">
+                <div class="customSelect" align="center">
+                    <select id="featureDropdown"></select> 
+                </div>
+                <div class="sliders">
+                    <input type="range" min="2013" max="2023" value="2015" class="slider" id="YearRange"><span class="range-slider__value" id="yearOutput"></span>
+                    <br><br>
+                    <input type="range" min="1" max="12" value="3" class="slider" id="MonthRange" /><span class="range-slider__value" id="monthOutput"></span>
+                    <script src="range_updater.js"></script>
+                </div>
+            </div>
+            <div class="textBox" style="padding-left: 17px; margin-top: 250px;">
+                <p style="font-size:.75em;  margin-top: 10px; margin-bottom: 0;"> Analyzing Parking Violations in NYC Through <span style="color:rgb(8,82,157,1)">Precincts</span></p>
+                <p style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;"> Scroll Down for Time Series Prediction! </p>
+            </div>
+        </div>
+        <div class="rightFirstVisualization">
+            <span style="margin-top: 50px; font-size: 55px;"><br></span>
+            <div id="svgContainer"; align = "center"></div>
+            <script src="choropleth_map.js"></script>            
+            <span style="margin-top: 50px; font-size: 35px;"><br></span>
+        </div>
+    </div>
+    <div class="secondVisualization">
+        <div class="leftSecondVisualization">
+            <div id="svgLineGraphContainer"; align = "center"></div>
+            <script src="line_graph.js"></script>
+        </div>
+        <div class="rightSecondVisualization">
+            <div class="textBox2"; align = "right">
+                <span style="margin-left: 0; margin-top: 0; margin-bottom: 0; margin-right: 100px;">Predicting</span><br>
+                <p style="font-size:3.7em;  margin-top: 0; margin-bottom: 0; align-items:flex-end;"><span style="color:rgb(8,82,157,1)">The</span> Future</p>
+            </div>
+            <div class="textBox" style="padding-left: 17px; margin-top: 400px;" align = "center">
+                <p style="font-size:.75em;  margin-top: 10px; margin-bottom: 0;"> Precinct Number </p>
+            </div>
+            <div class="customSelect2" align="center">
+                <select id="timeSeriesDropdown"></select> 
+            </div>
+            <div class="textBox" style="padding-left: 17px; margin-top: 250px;">
+                <p style="font-size:.75em;  margin-top: 10px; margin-bottom: 0;"> Analyzing Parking Violations in NYC Through <span style="color:rgb(8,82,157,1)">Precincts</span></p>
+                <p style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;"> Note: Forecast models are trained on data from Aug 2014 - Jul 2023, only data from Aug 2022 visualized </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

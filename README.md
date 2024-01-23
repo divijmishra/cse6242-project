@@ -4,7 +4,7 @@ This project provides a look into New York City's parking violations, highlighti
 
 This package guides the user through downloading and cleaning the data, analysis, and then setting up the interactive UI. We use Python 3.7 for data cleaning and precinct-wise trend and time series analysis. The UI is built using D3.js, and we have included the d3 scripts required. We have provided a directory structure at the end of this README for your reference.
 
-You can also check out our project poster and project report in the DOC folder.
+You can also check out our project poster (team019poster.pdf) and project report (team019report.pdf).
 
 
 # INSTALLATION: 
